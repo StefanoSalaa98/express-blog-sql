@@ -22,12 +22,31 @@ function show(req, res) {
     // recupero l'id dall' URL della richiesta
     const id = req.params.id;
 
-    //eseguo la query
-    const sql = 'SELECT * FROM posts WHERE id = ?';
-    connection.query(sql, [id], (err, results) => {
-        if (err) return res.status(500).json({ error: 'Database query failed' });
+    // prima query di ricerca della post singola
+    const postSql = 'SELECT * FROM posts WHERE id = ?';
+
+    // seconda query per i tag associati al post
+    const tagsSql = `
+    SELECT T.label AS tag
+    FROM tags AS T
+    JOIN post_tag AS PT ON PT.tag_id = T.id
+    JOIN posts AS P ON P.id = PT.post_id
+    WHERE P.id = ? `;
+
+    connection.query(postSql, [id], (err, results) => {
         if (results.length === 0) return res.status(404).json({ error: 'Post not found' });
-        res.json(results[0]);
+
+        // Recupero il post
+        const post = results[0];
+
+        // Se la prima query ha avuto successo, eseguo la seconda query per i tags
+        connection.query(tagsSql, [id], (err, results) => {
+            if (err) return res.status(500).json({ error: 'Database query failed' });
+
+            // Aggiungo i tags al post
+            post.tags = results;
+            res.json(post);
+        });
     });
 }
 
