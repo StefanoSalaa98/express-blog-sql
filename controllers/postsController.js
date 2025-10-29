@@ -6,26 +6,15 @@ const posts = require('../data/posts');
 const connection = require('../data/db');
 
 function index(req, res) {
-    // Il posts filtrato di partenza corrisponde a quello originale
-    let filteredposts = posts;
 
-    // codice errato per controllare funzionamento middleware errorServer
-    // test.controllo();
+    // preparo la query
+    const sql = 'SELECT * FROM posts';
 
-    // Se la richiesta contiene un filtro, allora filtro il posts tramite i metodi filter ed includes
-    if (req.query.tag) {
-        filteredposts = posts.filter(post => {
-            // rendo il primo carattere maiuscolo e tutti quelli successivi minuscoli per poter confrontare la stringa con i tag dei posts
-            query = req.query.tag[0].toUpperCase()
-            for (i = 1; i < req.query.tag.length; i++) {
-                query += req.query.tag[i].toLowerCase();
-            }
-            return post.tags.includes(query)
-        });
-    }
-
-    // restituisco la variabile filteredposts che contiene il posts filtrato
-    res.json(filteredposts);
+    // eseguo la query
+    connection.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database query failed' });
+        res.json(results);
+    });
 }
 
 function show(req, res) {
