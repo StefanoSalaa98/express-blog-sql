@@ -1,10 +1,13 @@
-// importiamo i dati della risorsa
+// importo i dati della risorsa
 const posts = require('../data/posts');
+
+
+// Importo il file di connessione al database
+const connection = require('../data/db');
 
 function index(req, res) {
     // Il posts filtrato di partenza corrisponde a quello originale
     let filteredposts = posts;
-    console.log("tutto ok");
 
     // codice errato per controllare funzionamento middleware errorServer
     // test.controllo();
