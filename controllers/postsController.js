@@ -132,31 +132,41 @@ function modify(req, res) {
 }
 
 function destroy(req, res) {
-    // recupero l'id dall' URL e lo converto in un numero per poterlo conforntare con gli altri id
-    const id = parseInt(req.params.id)
+    // // recupero l'id dall' URL e lo converto in un numero per poterlo conforntare con gli altri id
+    // const id = parseInt(req.params.id)
 
-    // cerco il post tramite id
-    const post = posts.find(post => post.id === id);
+    // // cerco il post tramite id
+    // const post = posts.find(post => post.id === id);
 
-    // // Controllo se il post da eliminare è stato trovato
-    if (!post) {
-        res.status(404);
+    // // // Controllo se il post da eliminare è stato trovato
+    // if (!post) {
+    //     res.status(404);
 
-        return res.json({
-            status: 404,
-            error: "Not Found",
-            message: "post non trovata"
-        })
-    }
+    //     return res.json({
+    //         status: 404,
+    //         error: "Not Found",
+    //         message: "post non trovata"
+    //     })
+    // }
 
-    // Rimuovo il post dall'elenco dei posts
-    posts.splice(posts.indexOf(post), 1);
+    // // Rimuovo il post dall'elenco dei posts
+    // posts.splice(posts.indexOf(post), 1);
 
-    // stampo l'elenco dei posts in console per controllare che sia stato eliminato correttamente
-    console.log(posts);
+    // // stampo l'elenco dei posts in console per controllare che sia stato eliminato correttamente
+    // console.log(posts);
 
-    // Restituisco lo status corretto
-    res.sendStatus(204)
+    // // Restituisco lo status corretto
+    // res.sendStatus(204)
+
+
+    // recupero l'id dall' URL della richiesta
+    const id = req.params.id;
+
+    const sql = 'DELETE FROM posts WHERE id = ?';
+    connection.query(sql, [id], (err) => {
+        if (err) return res.status(500).json({ error: 'Database query failed' });
+        res.sendStatus(204)
+    });
 }
 
 // esporto le funzioni che ho creato
