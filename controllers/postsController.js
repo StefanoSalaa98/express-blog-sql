@@ -18,27 +18,17 @@ function index(req, res) {
 }
 
 function show(req, res) {
-    // recupero l'id dall' URL e lo converto in un numero per poterlo conforntare con gli altri id
-    const id = parseInt(req.params.id)
 
-    // cerco il post tramite id
-    const post = posts.find(post => post.id === id);
+    // recupero l'id dall' URL della richiesta
+    const id = req.params.id;
 
-    // Controllo se il post è stato trovato
-    if (!post) {
-
-        //Imposto lo status 404
-        res.status(404)
-
-        // // Restituisco un JSON con le altre informazioni (posso scrivere quello che voglio)
-        return res.json({
-            error: "Not Found",
-            message: "post non trovato"
-        })
-    }
-
-    // Se sono arrivato fin qui, signfica che il post corrispondente è stato trovato, lo restituisco quindi sotto forma di JSON   
-    res.json(post);
+    //eseguo la query
+    const sql = 'SELECT * FROM posts WHERE id = ?';
+    connection.query(sql, [id], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database query failed' });
+        if (results.length === 0) return res.status(404).json({ error: 'Post not found' });
+        res.json(results[0]);
+    });
 }
 
 function store(req, res) {
@@ -132,36 +122,11 @@ function modify(req, res) {
 }
 
 function destroy(req, res) {
-    // // recupero l'id dall' URL e lo converto in un numero per poterlo conforntare con gli altri id
-    // const id = parseInt(req.params.id)
-
-    // // cerco il post tramite id
-    // const post = posts.find(post => post.id === id);
-
-    // // // Controllo se il post da eliminare è stato trovato
-    // if (!post) {
-    //     res.status(404);
-
-    //     return res.json({
-    //         status: 404,
-    //         error: "Not Found",
-    //         message: "post non trovata"
-    //     })
-    // }
-
-    // // Rimuovo il post dall'elenco dei posts
-    // posts.splice(posts.indexOf(post), 1);
-
-    // // stampo l'elenco dei posts in console per controllare che sia stato eliminato correttamente
-    // console.log(posts);
-
-    // // Restituisco lo status corretto
-    // res.sendStatus(204)
-
 
     // recupero l'id dall' URL della richiesta
     const id = req.params.id;
 
+    // eseguo la query
     const sql = 'DELETE FROM posts WHERE id = ?';
     connection.query(sql, [id], (err) => {
         if (err) return res.status(500).json({ error: 'Database query failed' });
